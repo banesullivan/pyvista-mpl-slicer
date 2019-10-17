@@ -372,7 +372,10 @@ class Slicer(object):
         """Remove elements from list <names> from plot if they exists."""
         for element in names:
             if hasattr(self, element):
-                getattr(self, element).remove()
+                try:
+                    getattr(self, element).remove()
+                except:
+                    pass
 
 
     @property
