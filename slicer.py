@@ -264,9 +264,13 @@ class Slicer(object):
         self.ax3.callbacks.connect('xlim_changed', on_xlims_changed)
         self.ax2.callbacks.connect('ylim_changed', on_ylims_changed)
 
+        self.fig.canvas.mpl_connect('scroll_event', self.onscroll)
+
+
 
     def onscroll(self, event):
         """Update index and data when scrolling."""
+        print("onscroll")
 
         # Get scroll direction
         if event.button == 'up':
@@ -297,17 +301,17 @@ class Slicer(object):
 
     def update_xy(self):
         """Update plot for change in Z-index."""
-        print("updating")
+        print("updating xy")
         # Clean up
         self._clear_elements(['xy_pc', 'xz_ahw', 'xz_ahk', 'zy_avw', 'zy_avk'])
 
         # Draw X-Y slice
         cntr = self.mesh.center
         cntr[2] = self.zind
-        slc = self.mesh.slice(normal="z", origin=cntr, generate_triangles=True)
-        pts = slc.points
-        tri = slc.faces.reshape((-1,4))[:, 1:]
-        val = slc.active_scalar
+        self.xy_slc = self.mesh.slice(normal="z", origin=cntr, generate_triangles=True)
+        pts = self.xy_slc.points
+        tri = self.xy_slc.faces.reshape((-1,4))[:, 1:]
+        val = self.xy_slc.active_scalar
         self.xy_pc = self.ax1.tricontourf(pts[:,0], pts[:,1], tri, val, **self.pc_props)
 
         # Draw Z-slice intersection in X-Z plot
@@ -320,17 +324,17 @@ class Slicer(object):
 
     def update_xz(self):
         """Update plot for change in Y-index."""
-
+        print("updating xz")
         # Clean up
         self._clear_elements(['xz_pc', 'zy_ahk', 'zy_ahw', 'xy_ahk', 'xy_ahw'])
 
         # Draw X-Z slice
         cntr = self.mesh.center
         cntr[1] = self.yind
-        slc = self.mesh.slice(normal="y", origin=cntr, generate_triangles=True)
-        pts = slc.points
-        tri = slc.faces.reshape((-1,4))[:, 1:]
-        val = slc.active_scalar
+        self.xz_slc = self.mesh.slice(normal="y", origin=cntr, generate_triangles=True)
+        pts = self.xz_slc.points
+        tri = self.xz_slc.faces.reshape((-1,4))[:, 1:]
+        val = self.xz_slc.active_scalar
         self.xz_pc = self.ax2.tricontourf(pts[:,0], pts[:,2], tri, val, **self.pc_props)
 
         # Draw X-slice intersection in X-Y plot
@@ -343,17 +347,17 @@ class Slicer(object):
 
     def update_zy(self):
         """Update plot for change in X-index."""
-
+        print("updating zy")
         # Clean up
         self._clear_elements(['zy_pc', 'xz_avw', 'xz_avk', 'xy_avw', 'xy_avk'])
 
         # Draw Z-Y slice
         cntr = self.mesh.center
         cntr[0] = self.xind
-        slc = self.mesh.slice(normal="x", origin=cntr, generate_triangles=True)
-        pts = slc.points
-        tri = slc.faces.reshape((-1,4))[:, 1:]
-        val = slc.active_scalar
+        self.zy_slc = self.mesh.slice(normal="x", origin=cntr, generate_triangles=True)
+        pts = self.zy_slc.points
+        tri = self.zy_slc.faces.reshape((-1,4))[:, 1:]
+        val = self.zy_slc.active_scalar
         self.zy_pc = self.ax3.tricontourf(pts[:,2], pts[:,1], tri, val, **self.pc_props)
 
         # Draw Y-slice intersection in X-Y plot
@@ -369,3 +373,8 @@ class Slicer(object):
         for element in names:
             if hasattr(self, element):
                 getattr(self, element).remove()
+
+
+    @property
+    def slices(self):
+        return pv.MultiBlock([self.xy_slc, self.xz_slc, self.zy_slc])

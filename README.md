@@ -11,13 +11,15 @@ This is super hacky and a work in progress. Use with caution.
 %matplotlib notebook
 import pyvista as pv
 from pyvista import examples
+import matplotlib.pyplot as plt
 
 # Local import
 from slicer import Slicer
 
 mesh = examples.load_channels()
 
-Slicer(mesh, "facies")
+slicer = Slicer(mesh, mesh.active_scalar_name)
+plt.show()
 ```
 
 ![demo](./demo.png)
