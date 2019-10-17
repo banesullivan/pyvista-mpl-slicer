@@ -302,7 +302,7 @@ class Slicer(object):
         self._clear_elements(['xy_pc', 'xz_ahw', 'xz_ahk', 'zy_avw', 'zy_avk'])
 
         # Draw X-Y slice
-        cntr = mesh.center
+        cntr = self.mesh.center
         cntr[2] = self.zind
         slc = self.mesh.slice(normal="z", origin=cntr, generate_triangles=True)
         pts = slc.points
@@ -325,7 +325,7 @@ class Slicer(object):
         self._clear_elements(['xz_pc', 'zy_ahk', 'zy_ahw', 'xy_ahk', 'xy_ahw'])
 
         # Draw X-Z slice
-        cntr = mesh.center
+        cntr = self.mesh.center
         cntr[1] = self.yind
         slc = self.mesh.slice(normal="y", origin=cntr, generate_triangles=True)
         pts = slc.points
@@ -348,7 +348,7 @@ class Slicer(object):
         self._clear_elements(['zy_pc', 'xz_avw', 'xz_avk', 'xy_avw', 'xy_avk'])
 
         # Draw Z-Y slice
-        cntr = mesh.center
+        cntr = self.mesh.center
         cntr[0] = self.xind
         slc = self.mesh.slice(normal="x", origin=cntr, generate_triangles=True)
         pts = slc.points
